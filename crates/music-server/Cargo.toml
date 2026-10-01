@@ -16,7 +16,6 @@ path = "src/main.rs"
 anyhow.workspace = true
 # "today" and dates the agent names, in this computer's time zone.
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
-# The folder picker for "use models I already have", the same crate Dub Studio uses.
 base64.workspace = true
 axum.workspace = true
 fs2.workspace = true
@@ -56,4 +55,5 @@ uuid.workspace = true
 zip.workspace = true
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
+# The desktop folder picker for "use models I already have".
 rfd = "0.17"
