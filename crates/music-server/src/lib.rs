@@ -6415,11 +6415,23 @@ async fn setup_adopt(State(state): State<AppState>, body: axum::body::Bytes) -> 
     let named = serde_json::from_slice::<Value>(&body).ok().and_then(|value| value.get("path").and_then(Value::as_str).map(std::path::PathBuf::from));
     let picked = match named {
         Some(folder) => Some(folder),
-        None => tokio::task::spawn_blocking(move || {
-            rfd::FileDialog::new().set_title("Folder with Music3 models").pick_folder()
-        })
-        .await
-        .map_err(|error| api_error(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?,
+        None => {
+            #[cfg(target_os = "android")]
+            {
+                return Err(api_error(
+                    StatusCode::NOT_IMPLEMENTED,
+                    "Android folder picking is unavailable; provide the model folder path explicitly".into(),
+                ));
+            }
+            #[cfg(not(target_os = "android"))]
+            {
+                tokio::task::spawn_blocking(move || {
+                    rfd::FileDialog::new().set_title("Folder with Music3 models").pick_folder()
+                })
+                .await
+                .map_err(|error| api_error(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?
+            }
+        }
     };
 
     let Some(folder) = picked else {

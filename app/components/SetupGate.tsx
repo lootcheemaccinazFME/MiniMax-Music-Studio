@@ -986,11 +986,14 @@ export const SetupGate: React.FC<{ onReady?: () => void; mode?: 'first-run' | 's
                   type="button"
                   onClick={() => {
                     void fetch('/setup/adopt', { method: 'POST' })
-                      .then((response) => (response.ok ? response.json() : null))
+                      .then(async (response) => {
+                        if (!response.ok) throw new Error(await errorMessage(response));
+                        return response.json();
+                      })
                       .then((body: { picked?: boolean; adopted?: string[] } | null) => {
                         if (body?.picked) void refresh();
                       })
-                      .catch(() => undefined);
+                      .catch((problem: unknown) => setError(problem instanceof Error ? problem.message : String(problem)));
                   }}
                   className="ml-2 mt-2 inline-flex items-center gap-1 rounded-lg border border-zinc-300 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:border-pink-400 hover:text-pink-600 dark:border-white/15 dark:text-zinc-300"
                 >
