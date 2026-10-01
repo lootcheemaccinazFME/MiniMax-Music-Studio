@@ -502,6 +502,7 @@ pub fn run() {
             // the studio's window, asked for by the service off the UI thread.
             let dialogs = app.handle().clone();
             music_server::set_save_dialog(Box::new(move |name: &str, start: Option<std::path::PathBuf>| {
+                #[cfg(not(target_os = "android"))]
                 use tauri::Manager;
                 use tauri_plugin_dialog::DialogExt;
                 let mut dialog = dialogs.dialog().file().set_file_name(name);
