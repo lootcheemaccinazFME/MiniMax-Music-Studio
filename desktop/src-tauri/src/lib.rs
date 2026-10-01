@@ -511,6 +511,7 @@ pub fn run() {
                 if let Some(folder) = start {
                     dialog = dialog.set_directory(folder);
                 }
+                #[cfg(not(target_os = "android"))]
                 if let Some(window) = dialogs.get_webview_window("main") {
                     dialog = dialog.set_parent(&window);
                 }
@@ -576,4 +577,3 @@ pub fn run() {
         .run(context)
         .expect("error while running MiniMax Music3 Studio");
 }
-
