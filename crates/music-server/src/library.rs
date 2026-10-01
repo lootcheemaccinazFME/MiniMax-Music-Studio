@@ -222,7 +222,8 @@ impl Library {
   let root=self.media_dir.canonicalize().ok()?;
   let stored=PathBuf::from(stored);
   if let Ok(path)=stored.canonicalize(){if path.starts_with(&root){return Some(path)}}
-  let by_name=self.media_dir.join(stored.file_name()?).canonicalize().ok()?;
+  let filename=stored.as_os_str().to_str()?.rsplit(['/', '\\']).next().filter(|name|!name.is_empty())?;
+  let by_name=self.media_dir.join(filename).canonicalize().ok()?;
   by_name.starts_with(&root).then_some(by_name)
  }
  pub fn media_path_for_song(&self,song:&Song)->Option<PathBuf>{self.resolve_media(song.audio_path.as_ref()?)}
